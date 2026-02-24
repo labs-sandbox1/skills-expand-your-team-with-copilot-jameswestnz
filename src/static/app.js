@@ -421,14 +421,6 @@ document.addEventListener("DOMContentLoaded", () => {
         queryParams.push(`difficulty=${encodeURIComponent(currentDifficulty)}`);
       }
 
-          // Weekend filtering will be handled on the client side
-        } else if (range) {
-          // Add time parameters for before/after school
-          queryParams.push(`start_time=${encodeURIComponent(range.start)}`);
-          queryParams.push(`end_time=${encodeURIComponent(range.end)}`);
-        }
-      }
-
       const queryString =
         queryParams.length > 0 ? `?${queryParams.join("&")}` : "";
       const response = await fetch(`/activities${queryString}`);

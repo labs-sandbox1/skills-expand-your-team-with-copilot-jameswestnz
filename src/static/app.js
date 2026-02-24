@@ -604,18 +604,20 @@ document.addEventListener("DOMContentLoaded", () => {
     const copyButton = activityCard.querySelector(".share-button.copy");
     if (copyButton) {
       copyButton.addEventListener("click", async (e) => {
-        const url = e.currentTarget.getAttribute("data-share-url");
+        const button = e.currentTarget;
+        const url = button.getAttribute("data-share-url");
         try {
           await navigator.clipboard.writeText(url);
           // Change button appearance to show success
-          e.currentTarget.classList.add("copied");
-          const originalIcon = e.currentTarget.querySelector("span").textContent;
-          e.currentTarget.querySelector("span").textContent = "✓";
+          button.classList.add("copied");
+          const iconSpan = button.querySelector("span");
+          const originalIcon = iconSpan.textContent;
+          iconSpan.textContent = "✓";
           
           // Reset after 2 seconds
           setTimeout(() => {
-            e.currentTarget.classList.remove("copied");
-            e.currentTarget.querySelector("span").textContent = originalIcon;
+            button.classList.remove("copied");
+            iconSpan.textContent = originalIcon;
           }, 2000);
         } catch (err) {
           console.error("Failed to copy link:", err);

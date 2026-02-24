@@ -519,6 +519,28 @@ document.addEventListener("DOMContentLoaded", () => {
       </div>
     `;
 
+    // Create social sharing buttons
+    const activityUrl = `${window.location.origin}${window.location.pathname}#${encodeURIComponent(name)}`;
+    const shareUrl = encodeURIComponent(activityUrl);
+    const shareText = encodeURIComponent(`Check out ${name} at Mergington High School! ${details.description}`);
+    const shareButtons = `
+      <div class="share-buttons">
+        <span class="share-label">Share:</span>
+        <a href="https://www.facebook.com/sharer/sharer.php?u=${shareUrl}" target="_blank" rel="noopener noreferrer" class="share-button facebook" title="Share on Facebook">
+          <span>📘</span>
+        </a>
+        <a href="https://twitter.com/intent/tweet?text=${shareText}&url=${shareUrl}" target="_blank" rel="noopener noreferrer" class="share-button twitter" title="Share on Twitter">
+          <span>🐦</span>
+        </a>
+        <a href="mailto:?subject=${encodeURIComponent(name)}&body=${shareText}%20${shareUrl}" class="share-button email" title="Share via Email">
+          <span>📧</span>
+        </a>
+        <button class="share-button copy" data-share-url="${activityUrl}" title="Copy link" aria-label="Copy link to ${name}">
+          <span>🔗</span>
+        </button>
+      </div>
+    `;
+
     activityCard.innerHTML = `
       ${tagHtml}
       <h4>${name}</h4>
@@ -528,6 +550,7 @@ document.addEventListener("DOMContentLoaded", () => {
         <span class="tooltip-text">Regular meetings at this time throughout the semester</span>
       </p>
       ${capacityIndicator}
+      ${shareButtons}
       <div class="participants-list">
         <h5>Current Participants:</h5>
         <ul>
@@ -576,6 +599,31 @@ document.addEventListener("DOMContentLoaded", () => {
     deleteButtons.forEach((button) => {
       button.addEventListener("click", handleUnregister);
     });
+
+    // Add click handler for copy link button
+    const copyButton = activityCard.querySelector(".share-button.copy");
+    if (copyButton) {
+      copyButton.addEventListener("click", async (e) => {
+        const url = e.currentTarget.getAttribute("data-share-url");
+        try {
+          await navigator.clipboard.writeText(url);
+          // Change button appearance to show success
+          e.currentTarget.classList.add("copied");
+          const originalIcon = e.currentTarget.querySelector("span").textContent;
+          e.currentTarget.querySelector("span").textContent = "✓";
+          
+          // Reset after 2 seconds
+          setTimeout(() => {
+            e.currentTarget.classList.remove("copied");
+            e.currentTarget.querySelector("span").textContent = originalIcon;
+          }, 2000);
+        } catch (err) {
+          console.error("Failed to copy link:", err);
+          // Fallback for browsers that don't support clipboard API
+          showMessage("Failed to copy link. Please copy manually.", "error");
+        }
+      });
+    }
 
     // Add click handler for register button (only when authenticated)
     if (currentUser) {

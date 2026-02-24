@@ -25,6 +25,11 @@ document.addEventListener("DOMContentLoaded", () => {
   const closeLoginModal = document.querySelector(".close-login-modal");
   const loginMessage = document.getElementById("login-message");
 
+  // Dark mode elements
+  const darkModeToggle = document.getElementById("dark-mode-toggle");
+  const themeIcon = document.querySelector(".theme-icon");
+  const themeText = document.getElementById("theme-text");
+
   // Activity categories with corresponding colors
   const activityTypes = {
     sports: { label: "Sports", color: "#e8f5e9", textColor: "#2e7d32" },
@@ -855,6 +860,35 @@ document.addEventListener("DOMContentLoaded", () => {
     }
   });
 
+  // Dark mode functionality
+  function initializeDarkMode() {
+    // Check if user has a saved preference
+    const savedTheme = localStorage.getItem("theme");
+    if (savedTheme === "dark") {
+      document.body.classList.add("dark-mode");
+      themeIcon.textContent = "☀️";
+      themeText.textContent = "Light";
+    }
+  }
+
+  function toggleDarkMode() {
+    document.body.classList.toggle("dark-mode");
+    
+    // Update button icon and text
+    if (document.body.classList.contains("dark-mode")) {
+      themeIcon.textContent = "☀️";
+      themeText.textContent = "Light";
+      localStorage.setItem("theme", "dark");
+    } else {
+      themeIcon.textContent = "🌙";
+      themeText.textContent = "Dark";
+      localStorage.setItem("theme", "light");
+    }
+  }
+
+  // Add event listener for dark mode toggle
+  darkModeToggle.addEventListener("click", toggleDarkMode);
+
   // Expose filter functions to window for future UI control
   window.activityFilters = {
     setDayFilter,
@@ -862,6 +896,7 @@ document.addEventListener("DOMContentLoaded", () => {
   };
 
   // Initialize app
+  initializeDarkMode();
   checkAuthentication();
   initializeFilters();
   fetchActivities();

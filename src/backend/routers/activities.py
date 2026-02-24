@@ -18,26 +18,50 @@ router = APIRouter(
 def get_activities(
     day: Optional[str] = None,
     start_time: Optional[str] = None,
-    end_time: Optional[str] = None
+    end_time: Optional[str] = None,
+    difficulty: Optional[str] = None
 ) -> Dict[str, Any]:
     """
-    Get all activities with their details, with optional filtering by day and time
+    Get all activities with their details, with optional filtering by day, time, and difficulty
     
     - day: Filter activities occurring on this day (e.g., 'Monday', 'Tuesday')
     - start_time: Filter activities starting at or after this time (24-hour format, e.g., '14:30')
     - end_time: Filter activities ending at or before this time (24-hour format, e.g., '17:00')
+    - difficulty: Filter activities by difficulty level (e.g., 'Beginner', 'Intermediate', 'Advanced', 'all')
     """
-    # Build the query based on provided filters
-    query = {}
+    # Build base filters
+    base_filters = []
     
     if day:
-        query["schedule_details.days"] = {"$in": [day]}
+        base_filters.append({"schedule_details.days": {"$in": [day]}})
     
     if start_time:
-        query["schedule_details.start_time"] = {"$gte": start_time}
+        base_filters.append({"schedule_details.start_time": {"$gte": start_time}})
     
     if end_time:
-        query["schedule_details.end_time"] = {"$lte": end_time}
+        base_filters.append({"schedule_details.end_time": {"$lte": end_time}})
+    
+    # Handle difficulty filter with validation
+    if difficulty:
+        # Validate difficulty parameter to prevent injection
+        valid_difficulties = ["Beginner", "Intermediate", "Advanced", "all"]
+        if difficulty not in valid_difficulties:
+            raise HTTPException(status_code=400, detail=f"Invalid difficulty level. Must be one of: {', '.join(valid_difficulties)}")
+        
+        if difficulty == "all":
+            # Show only activities with no difficulty field
+            base_filters.append({"difficulty": {"$exists": False}})
+        else:
+            # Filter activities: either matching difficulty or no difficulty specified (all levels)
+            base_filters.append({
+                "$or": [
+                    {"difficulty": difficulty},
+                    {"difficulty": {"$exists": False}}
+                ]
+            })
+    
+    # Combine all filters with $and
+    query = {"$and": base_filters} if base_filters else {}
     
     # Query the database
     activities = {}

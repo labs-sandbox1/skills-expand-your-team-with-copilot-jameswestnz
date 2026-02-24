@@ -619,15 +619,50 @@ footer {
   right: 15px;
 }
 
-/* Marquee styling */
-marquee {
+/* Marquee animation using CSS */
+.marquee-container {
   width: 100%;
-  padding: 5px 0;
+  overflow: hidden;
+  position: relative;
 }
 
-marquee h2 {
-  display: inline;
-  margin: 0;
+.marquee-text,
+.marquee-text-footer {
+  display: inline-block;
+  padding-left: 100%;
+  animation: marquee 20s linear infinite;
+  white-space: nowrap;
+}
+
+.marquee-text-footer {
+  animation: marquee-reverse 20s linear infinite;
+}
+
+@keyframes marquee {
+  0% {
+    transform: translateX(0);
+  }
+  100% {
+    transform: translateX(-100%);
+  }
+}
+
+@keyframes marquee-reverse {
+  0% {
+    transform: translateX(-100%);
+  }
+  100% {
+    transform: translateX(0);
+  }
+}
+
+/* Respect user's motion preferences */
+@media (prefers-reduced-motion: reduce) {
+  .marquee-text,
+  .marquee-text-footer {
+    animation: none;
+    padding-left: 0;
+  }
 }
 
 /* Social sharing buttons */
@@ -691,6 +726,11 @@ marquee h2 {
 
 .share-button span {
   pointer-events: none;
+}
+
+.share-button.copied {
+  background-color: var(--success);
+  border-color: var(--success);
 }
 
 #user-status {

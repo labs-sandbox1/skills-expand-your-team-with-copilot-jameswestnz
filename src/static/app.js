@@ -535,7 +535,7 @@ document.addEventListener("DOMContentLoaded", () => {
         <a href="mailto:?subject=${encodeURIComponent(name)}&body=${shareText}%20${shareUrl}" class="share-button email" title="Share via Email">
           <span>📧</span>
         </a>
-        <button class="share-button copy" data-share-url="${activityUrl}" title="Copy link">
+        <button class="share-button copy" data-share-url="${activityUrl}" title="Copy link" aria-label="Copy link to ${name}">
           <span>🔗</span>
         </button>
       </div>
